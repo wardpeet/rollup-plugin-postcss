@@ -1,3 +1,4 @@
 import './nested.css'
+import component from './component'
 
-export default 'test'
+export default component
