@@ -243,7 +243,7 @@
 
 ### Bug fixes
 
-- escape $ in replace argument, fixed [#58](https://github.com/egoist/rollup-plugin-postcss/issues/58): [`924513e`](https://github.com/egoist/rollup-plugin-postcss/commit/924513e)
+- escape \$ in replace argument, fixed [#58](https://github.com/egoist/rollup-plugin-postcss/issues/58): [`924513e`](https://github.com/egoist/rollup-plugin-postcss/commit/924513e)
 
 [...full changes](https://github.com/egoist/rollup-plugin-postcss/compare/v1.0.3...v1.0.4)
 
@@ -270,7 +270,6 @@
 - reintroduce namedExports: [`3381db8`](https://github.com/egoist/rollup-plugin-postcss/commit/3381db8)
 
 [...full changes](https://github.com/egoist/rollup-plugin-postcss/compare/v1.0.0...v1.0.1)
-
 
 ---
 

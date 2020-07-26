@@ -1,7 +1,7 @@
 # rollup-plugin-postcss
 
 [![NPM version](https://img.shields.io/npm/v/rollup-plugin-postcss.svg?style=flat)](https://npmjs.com/package/rollup-plugin-postcss) [![NPM downloads](https://img.shields.io/npm/dm/rollup-plugin-postcss.svg?style=flat)](https://npmjs.com/package/rollup-plugin-postcss) [![Build Status](https://img.shields.io/circleci/project/egoist/rollup-plugin-postcss/master.svg?style=flat)](https://circleci.com/gh/egoist/rollup-plugin-postcss) [![codecov](https://codecov.io/gh/egoist/rollup-plugin-postcss/branch/master/graph/badge.svg)](https://codecov.io/gh/egoist/rollup-plugin-postcss)
- [![donate](https://img.shields.io/badge/$-donate-ff69b4.svg?maxAge=2592000&style=flat)](https://github.com/egoist/donate)
+[![donate](https://img.shields.io/badge/$-donate-ff69b4.svg?maxAge=2592000&style=flat)](https://github.com/egoist/donate)
 
 <img align="right" width="95" height="95"
      title="Philosopher’s stone, logo of PostCSS"
@@ -20,7 +20,7 @@ yarn add rollup-plugin-postcss --dev
 `v2.0` support rollup v1 or above, but it prints deprecated warning from rollup v2.
 
 **Breaking change**: `v3.0` only support rollup v2, and the extract path based on bundle root
- the location of the generated file outside the bundle directory not allowed in rollup v2.
+the location of the generated file outside the bundle directory not allowed in rollup v2.
 
 ```js
 // rollup.config.js
@@ -29,9 +29,9 @@ import postcss from 'rollup-plugin-postcss'
 export default {
   plugins: [
     postcss({
-      plugins: []
-    })
-  ]
+      plugins: [],
+    }),
+  ],
 }
 ```
 
@@ -57,7 +57,7 @@ It will also automatically use local PostCSS config files.
 postcss({
   extract: true,
   // Or with custom file name, it will generate file relative to bundle.js in v3
-  extract: 'dist/my-custom-file-name.css'
+  extract: 'dist/my-custom-file-name.css',
 })
 
 // for v3
@@ -65,7 +65,7 @@ import path from 'path'
 postcss({
   extract: true,
   // Or with custom file name
-  extract: path.resolve('dist/my-custom-file-name.css')
+  extract: path.resolve('dist/my-custom-file-name.css'),
 })
 ```
 
@@ -75,7 +75,7 @@ postcss({
 postcss({
   modules: true,
   // Or with custom options for `postcss-modules`
-  modules: {}
+  modules: {},
 })
 ```
 
@@ -91,7 +91,7 @@ That's it, you can now import `.styl` `.scss` `.sass` `.less` files in your libr
 
 #### imports
 
-__For Sass/Scss Only.__
+**For Sass/Scss Only.**
 
 Similar to how webpack's [sass-loader](https://github.com/webpack-contrib/sass-loader#imports) works, you can prepend the path with `~` to tell this plugin to resolve in `node_modules`:
 
@@ -249,13 +249,13 @@ the postcss config.
 postcss({
   config: {
     ctx: {
-      foo: 'bar'
-    }
-  }
+      foo: 'bar',
+    },
+  },
 })
 
 // postcss.config.js
-module.exports = context => {
+module.exports = (context) => {
   console.log(context.options.foo) // 'bar'
 
   return {}
@@ -266,7 +266,7 @@ module.exports = context => {
 
 Type: `string`
 
-Destination CSS filename hint that could be used by PostCSS plugins, for example, 
+Destination CSS filename hint that could be used by PostCSS plugins, for example,
 to properly resolve path, rebase and copy assets.
 
 ### use
