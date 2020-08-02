@@ -42,8 +42,10 @@
     "fs-extra": "^9.0.0",
     "jest": "^25.3.0",
     "less": "^3.11.1",
+    "lodash.clonedeep": "^4.5.0",
     "node-sass": "^4.13.1",
-    "rollup": "^2.6.1",
+    "rollup": "^2.21.0",
+    "rollup-pre-treeshake@npm:rollup": "2.6.1",
     "stylus": "^0.54.7",
     "sugarss": "^2.0.0",
     "xo": "^0.29.1"
@@ -62,6 +64,7 @@
     "resolve": "^1.16.1",
     "rollup-pluginutils": "^2.8.2",
     "safe-identifier": "^0.4.1",
+    "semver": "^7.3.2",
     "style-inject": "^0.3.0"
   },
   "xo": {
@@ -77,7 +80,11 @@
       "@typescript-eslint/semi": 0,
       "eslint-comments/disable-enable-pair": 0,
       "promise/prefer-await-to-then": 0
-    }
+    },
+    "ignores": [
+      "./CHANGELOG-OLD.md",
+      "**/*/*.snap"
+    ]
   },
   "jest": {
     "testEnvironment": "node"

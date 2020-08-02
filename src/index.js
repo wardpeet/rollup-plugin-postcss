@@ -1,6 +1,7 @@
 import path from 'path'
-import {createFilter} from 'rollup-pluginutils'
+import { createFilter } from 'rollup-pluginutils'
 import Concat from 'concat-with-sourcemaps'
+import * as semver from 'semver'
 import Loaders from './loaders'
 import normalizePath from './utils/normalize-path'
 
@@ -38,12 +39,25 @@ function getRecursiveImportOrder(id, getModuleInfo, seen = new Set()) {
   return result
 }
 
+function flatMap(array, fn) {
+  if (Array.prototype.flatMap) {
+    return array.flatMap(fn)
+  }
+
+  let result = []
+  array.forEach((item, index) => {
+    result = result.concat(fn.call(item, index, array))
+  })
+
+  return result
+}
+
 export default (options = {}) => {
   const filter = createFilter(options.include, options.exclude)
   const postcssPlugins = Array.isArray(options.plugins)
     ? options.plugins.filter(Boolean)
     : options.plugins
-  const {sourceMap} = options
+  const { sourceMap } = options
   const postcssLoaderOptions = {
     /** Inject CSS as `<style>` to `<head>` */
     inject:
@@ -70,8 +84,8 @@ export default (options = {}) => {
       plugins: postcssPlugins,
       syntax: options.syntax,
       stringifier: options.stringifier,
-      exec: options.exec
-    }
+      exec: options.exec,
+    },
   }
   let use = ['sass', 'stylus', 'less']
   if (Array.isArray(options.use)) {
@@ -80,16 +94,15 @@ export default (options = {}) => {
     use = [
       ['sass', options.use.sass || {}],
       ['stylus', options.use.stylus || {}],
-      ['less', options.use.less || {}]
+      ['less', options.use.less || {}],
     ]
   }
 
   use.unshift(['postcss', postcssLoaderOptions])
-
   const loaders = new Loaders({
     use,
     loaders: options.loaders,
-    extensions: options.extensions
+    extensions: options.extensions,
   })
 
   const extracted = new Map()
@@ -111,13 +124,13 @@ export default (options = {}) => {
         sourceMap,
         dependencies: new Set(),
         warn: this.warn.bind(this),
-        plugin: this
+        plugin: this,
       }
 
       const result = await loaders.process(
         {
           code,
-          map: undefined
+          map: undefined,
         },
         loaderContext
       )
@@ -130,13 +143,15 @@ export default (options = {}) => {
         extracted.set(id, result.extracted)
         return {
           code: result.code,
-          map: {mappings: ''}
+          map: { mappings: '' },
+          moduleSideEffects: 'no-treeshake',
         }
       }
 
       return {
         code: result.code,
-        map: result.map || {mappings: ''}
+        map: result.map || { mappings: '' },
+        moduleSideEffects: 'no-treeshake',
       }
     },
 
@@ -145,7 +160,7 @@ export default (options = {}) => {
       const extractedValue = [...extracted].reduce(
         (object, [key, value]) => ({
           ...object,
-          [key]: value
+          [key]: value,
         }),
         {}
       )
@@ -177,15 +192,25 @@ export default (options = {}) => {
 
         const concat = new Concat(true, fileName, '\n')
         const entries = [...extracted.values()]
-        const {modules, facadeModuleId} = bundle[
+        const { modules, facadeModuleId } = bundle[
           normalizePath(path.relative(dir, file))
         ]
 
         if (modules) {
-          const moduleIds = getRecursiveImportOrder(
-            facadeModuleId,
-            this.getModuleInfo
-          )
+          // Disable treeshaking per module is added in version 2.21.0
+          // depending on what version exist we do a different algorithm to find moduleIds
+          let moduleIds = []
+          if (semver.satisfies(this.meta.rollupVersion, '>=2.21.0')) {
+            moduleIds = flatMap([...Object.values(bundle)], (fileInfo) =>
+              Object.keys(fileInfo.modules)
+            ).filter((id) => loaders.isSupported(id))
+          } else {
+            moduleIds = getRecursiveImportOrder(
+              facadeModuleId,
+              this.getModuleInfo
+            )
+          }
+
           entries.sort(
             (a, b) => moduleIds.indexOf(a.id) - moduleIds.indexOf(b.id)
           )
@@ -216,7 +241,7 @@ export default (options = {}) => {
           code,
           map: sourceMap === true && concat.sourceMap,
           codeFileName: fileName,
-          mapFileName: fileName + '.map'
+          mapFileName: fileName + '.map',
         }
       }
 
@@ -227,15 +252,15 @@ export default (options = {}) => {
         }
       }
 
-      let {code, codeFileName, map, mapFileName} = getExtracted()
+      let { code, codeFileName, map, mapFileName } = getExtracted()
       // Perform cssnano on the extracted file
       if (postcssLoaderOptions.minimize) {
         const cssOptions = postcssLoaderOptions.minimize
         cssOptions.from = codeFileName
         if (sourceMap === 'inline') {
-          cssOptions.map = {inline: true}
+          cssOptions.map = { inline: true }
         } else if (sourceMap === true && map) {
-          cssOptions.map = {prev: map}
+          cssOptions.map = { prev: map }
           cssOptions.to = codeFileName
         }
 
@@ -250,15 +275,15 @@ export default (options = {}) => {
       this.emitFile({
         fileName: codeFileName,
         type: 'asset',
-        source: code
+        source: code,
       })
       if (map) {
         this.emitFile({
           fileName: mapFileName,
           type: 'asset',
-          source: map
+          source: map,
         })
       }
-    }
+    },
   }
 }
