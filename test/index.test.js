@@ -1,7 +1,7 @@
 import path from 'path'
 import fs from 'fs-extra'
-import { rollup } from 'rollup'
-import { rollup as rollupPreTreeshake } from 'rollup-pre-treeshake'
+import {rollup} from 'rollup'
+import {rollup as rollupPreTreeshake} from 'rollup-pre-treeshake'
 import cloneDeep from 'lodash.clonedeep'
 import postcss from '../src'
 
@@ -17,8 +17,8 @@ function fixture(...args) {
 
 beforeAll(() => fs.remove(fixture('dist')))
 
-async function write({ input, outDir, options, rollup: rollupInstance }) {
-  const { delayResolve, ...postCssOptions } = options
+async function write({input, outDir, options, rollup: rollupInstance}) {
+  const {delayResolve, ...postCssOptions} = options
 
   let first = true
   // Delay the resolving of the first css file
@@ -36,7 +36,7 @@ async function write({ input, outDir, options, rollup: rollupInstance }) {
       return new Promise((resolve) => {
         setTimeout(() => resolve(null), 1000)
       })
-    },
+    }
   }
 
   outDir = fixture('dist', outDir)
@@ -44,11 +44,11 @@ async function write({ input, outDir, options, rollup: rollupInstance }) {
     input: fixture(input),
     plugins: [postcss(postCssOptions), delayResolve && lateResolve].filter(
       Boolean
-    ),
+    )
   })
   await bundle.write({
     format: 'cjs',
-    file: path.join(outDir, 'bundle.js'),
+    file: path.join(outDir, 'bundle.js')
   })
   let cssCodePath = path.join(outDir, 'bundle.css')
   if (typeof options.extract === 'string') {
@@ -76,11 +76,11 @@ async function write({ input, outDir, options, rollup: rollupInstance }) {
     },
     hasCssMapFile() {
       return fs.pathExists(cssMapPath)
-    },
+    }
   }
 }
 
-function snapshot({ title, input, outDir, rollup, options = {} }) {
+function snapshot({title, input, outDir, rollup, options = {}}) {
   test(
     title,
     async () => {
@@ -90,7 +90,7 @@ function snapshot({ title, input, outDir, rollup, options = {} }) {
           input,
           outDir,
           options,
-          rollup,
+          rollup
         })
       } catch (error) {
         const frame = error.codeFrame || error.snippet
@@ -129,7 +129,7 @@ function snapshotMany(title, tests) {
         snapshot({
           ...cloneDeep(test),
           rollup: rollupPreTreeshake,
-          outDir: `${title}--${test.title}`,
+          outDir: `${title}--${test.title}`
         })
       }
     })
@@ -139,7 +139,7 @@ function snapshotMany(title, tests) {
         snapshot({
           ...cloneDeep(test),
           rollup,
-          outDir: `${title}--${test.title}`,
+          outDir: `${title}--${test.title}`
         })
       }
     })
@@ -149,11 +149,11 @@ function snapshotMany(title, tests) {
 snapshotMany('basic', [
   {
     title: 'simple',
-    input: 'simple/index.js',
+    input: 'simple/index.js'
   },
   {
     title: 'postcss-config',
-    input: 'postcss-config/index.js',
+    input: 'postcss-config/index.js'
   },
   {
     title: 'skip-loader',
@@ -166,18 +166,18 @@ snapshotMany('basic', [
           test: /\.random$/,
           process() {
             return 'lol'
-          },
-        },
-      ],
-    },
+          }
+        }
+      ]
+    }
   },
   {
     title: 'postcss-options',
     input: 'postcss-options/index.js',
     options: {
-      plugins: [require('autoprefixer')()],
-    },
-  },
+      plugins: [require('autoprefixer')()]
+    }
+  }
 ])
 
 snapshotMany('minimize', [
@@ -185,16 +185,16 @@ snapshotMany('minimize', [
     title: 'inject',
     input: 'simple/index.js',
     options: {
-      minimize: true,
-    },
+      minimize: true
+    }
   },
   {
     title: 'extract',
     input: 'simple/index.js',
     options: {
       minimize: true,
-      extract: true,
-    },
+      extract: true
+    }
   },
   {
     title: 'extract-sourcemap-true',
@@ -202,8 +202,8 @@ snapshotMany('minimize', [
     options: {
       minimize: true,
       extract: true,
-      sourceMap: true,
-    },
+      sourceMap: true
+    }
   },
   {
     title: 'extract-sourcemap-inline',
@@ -211,9 +211,9 @@ snapshotMany('minimize', [
     options: {
       minimize: true,
       extract: true,
-      sourceMap: 'inline',
-    },
-  },
+      sourceMap: 'inline'
+    }
+  }
 ])
 
 snapshotMany('modules', [
@@ -221,8 +221,8 @@ snapshotMany('modules', [
     title: 'inject',
     input: 'css-modules/index.js',
     options: {
-      modules: true,
-    },
+      modules: true
+    }
   },
   {
     title: 'inject-object',
@@ -232,17 +232,17 @@ snapshotMany('modules', [
       modules: {
         getJSON() {
           //
-        },
-      },
-    },
+        }
+      }
+    }
   },
   {
     title: 'named-exports',
     input: 'named-exports/index.js',
     options: {
       modules: true,
-      namedExports: true,
-    },
+      namedExports: true
+    }
   },
   {
     title: 'named-exports-custom-class-name',
@@ -251,21 +251,21 @@ snapshotMany('modules', [
       modules: true,
       namedExports(name) {
         return name + 'hacked'
-      },
-    },
+      }
+    }
   },
   {
     title: 'extract',
     input: 'css-modules/index.js',
     options: {
       modules: true,
-      extract: true,
-    },
+      extract: true
+    }
   },
   {
     title: 'auto-modules',
-    input: 'auto-modules/index.js',
-  },
+    input: 'auto-modules/index.js'
+  }
 ])
 
 snapshotMany('sourcemap', [
@@ -273,17 +273,17 @@ snapshotMany('sourcemap', [
     title: 'true',
     input: 'simple/index.js',
     options: {
-      sourceMap: true,
-    },
+      sourceMap: true
+    }
   },
   // Is it broken?
   {
     title: 'inline',
     input: 'simple/index.js',
     options: {
-      sourceMap: 'inline',
-    },
-  },
+      sourceMap: 'inline'
+    }
+  }
 ])
 
 snapshotMany('extract', [
@@ -291,48 +291,48 @@ snapshotMany('extract', [
     title: 'true',
     input: 'simple/index.js',
     options: {
-      extract: true,
-    },
+      extract: true
+    }
   },
   {
     title: 'custom-path',
     input: 'simple/index.js',
     options: {
       extract: fixture('dist/extract--custom-path/this/is/extracted.css'),
-      sourceMap: true,
-    },
+      sourceMap: true
+    }
   },
   {
     title: 'relative-path',
     input: 'simple/index.js',
     options: {
       extract: 'this/is/extracted.css',
-      sourceMap: true,
-    },
+      sourceMap: true
+    }
   },
   {
     title: 'sourcemap-true',
     input: 'simple/index.js',
     options: {
       sourceMap: true,
-      extract: true,
-    },
+      extract: true
+    }
   },
   {
     title: 'sourcemap-inline',
     input: 'simple/index.js',
     options: {
       sourceMap: 'inline',
-      extract: true,
-    },
+      extract: true
+    }
   },
   {
     title: 'nested',
     input: 'nested/index.js',
     options: {
       sourceMap: 'inline',
-      extract: true,
-    },
+      extract: true
+    }
   },
   {
     title: 'nested-delay-resolve',
@@ -340,9 +340,9 @@ snapshotMany('extract', [
     options: {
       sourceMap: 'inline',
       extract: true,
-      delayResolve: true,
-    },
-  },
+      delayResolve: true
+    }
+  }
 ])
 
 snapshotMany('inject', [
@@ -351,56 +351,56 @@ snapshotMany('inject', [
     input: 'simple/index.js',
     options: {
       inject: {
-        insertAt: 'top',
-      },
-    },
+        insertAt: 'top'
+      }
+    }
   },
   {
     title: 'function',
     input: 'simple/index.js',
     options: {
-      inject: (variableName) => `console.log(${variableName})`,
-    },
+      inject: (variableName) => `console.log(${variableName})`
+    }
   },
   {
     title: 'false',
     input: 'simple/index.js',
     options: {
-      inject: false,
-    },
-  },
+      inject: false
+    }
+  }
 ])
 
 snapshotMany('sass', [
   {
     title: 'default',
-    input: 'sass/index.js',
+    input: 'sass/index.js'
   },
   {
     title: 'sourcemap',
     input: 'sass/index.js',
     options: {
-      sourceMap: true,
-    },
+      sourceMap: true
+    }
   },
   {
     title: 'modules',
     input: 'sass-modules/index.js',
     options: {
-      modules: true,
-    },
+      modules: true
+    }
   },
   {
     title: 'data-prepend',
     input: 'sass-data-prepend/index.js',
     options: {
-      use: [['sass', { data: "@import 'prepend';" }]],
-    },
+      use: [['sass', {data: "@import 'prepend';"}]]
+    }
   },
   {
     title: 'import',
-    input: 'sass-import/index.js',
-  },
+    input: 'sass-import/index.js'
+  }
 ])
 
 test('onExtract', async () => {
@@ -411,9 +411,9 @@ test('onExtract', async () => {
       extract: true,
       onExtract() {
         return false
-      },
+      }
     },
-    rollup: rollupPreTreeshake,
+    rollup: rollupPreTreeshake
   })
   expect(await result.jsCode()).toMatchSnapshot()
   expect(await result.hasCssFile()).toBe(false)
@@ -428,12 +428,12 @@ test('augmentChunkHash', async () => {
   for (const file of cssFiles) {
     const newBundle = await rollup({
       input: fixture(file),
-      plugins: [postcss({ extract: true })],
+      plugins: [postcss({extract: true})]
     })
     const entryFileName = file.split('.')[0]
-    const { output } = await newBundle.write({
+    const {output} = await newBundle.write({
       dir: outDir,
-      entryFileNames: `${entryFileName}.[hash].css`,
+      entryFileNames: `${entryFileName}.[hash].css`
     })
     outputFiles.push(output[0])
   }
