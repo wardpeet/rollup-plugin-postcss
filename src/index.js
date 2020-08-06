@@ -46,7 +46,7 @@ function flatMap(array, fn) {
 
   let result = []
   array.forEach((item, index) => {
-    result = result.concat(fn.call(item, index, array))
+    result = result.concat(fn.call(item, item, index, array))
   })
 
   return result
