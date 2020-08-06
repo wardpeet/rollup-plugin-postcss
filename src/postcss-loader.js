@@ -185,20 +185,40 @@ export default {
 
     const cssVariableName = identifier('css', true)
     if (shouldExtract) {
-      output += `export default ${JSON.stringify(modulesExported[this.id])};`
+      // If the file is using css modules and the file exports any classes then
+      // the default export will be that mapping. If a css-modules file defines
+      // no classnames then the default export will not be present.
+      if (supportModules && modulesExported[this.id] !== undefined) {
+        output += `export default ${JSON.stringify(modulesExported[this.id])};`
+      } else {
+        // An empty export to tell bundlers that this is an esm file as an empty
+        //source file is ambigious (is it cjs or esm?)
+        output += `export {};`
+      }
+
       extracted = {
         id: this.id,
         code: result.css,
         map: outputMap
       }
     } else {
-      const module = supportModules
-        ? JSON.stringify(modulesExported[this.id])
-        : cssVariableName
-      output +=
-        `var ${cssVariableName} = ${JSON.stringify(result.css)};\n` +
-        `export default ${module};\n` +
-        `export var stylesheet=${JSON.stringify(result.css)};`
+      output += `var ${cssVariableName} = ${JSON.stringify(result.css)};\n`;
+
+      if (supportModules) {
+        // If the file is using css modules and the file exports any classes then
+        // the default export will that mapping. (If a file css-modules file
+        // defines no classnames then the default export not be present.
+        if (modulesExported[this.id] !== undefined) {
+          output += `export default ${JSON.stringify(modulesExported[this.id])};`
+        } else {
+          // An empty export to tell bundlers that this is an esm file as an empty
+        //source file is ambigious (is it cjs or esm?)
+          output += `export {};`
+        }
+      } else {
+        // the CSS content is the default export
+        output += `export default ${cssVariableName};`
+      }
     }
 
     if (!shouldExtract && shouldInject) {
