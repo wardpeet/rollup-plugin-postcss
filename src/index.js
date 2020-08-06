@@ -44,12 +44,7 @@ function flatMap(array, fn) {
     return array.flatMap(fn)
   }
 
-  let result = []
-  array.forEach((item, index) => {
-    result = result.concat(fn.call(item, index, array))
-  })
-
-  return result
+  return array.reduce((memo, item) => memo.concat(fn(item)), []);
 }
 
 export default (options = {}) => {
