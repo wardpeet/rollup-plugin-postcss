@@ -9,7 +9,7 @@ process.env.ROLLUP_POSTCSS_TEST = true
 /**
  * solve jest timeout on Windows OS
  */
-const JEST_TIMEOUT = process.platform === 'win32' ? 20000 : 5000
+const JEST_TIMEOUT = process.platform === 'win32' ? 20000 : 10000
 
 function fixture(...args) {
   return path.join(__dirname, 'fixtures', ...args)
